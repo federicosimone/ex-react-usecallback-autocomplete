@@ -21,21 +21,28 @@ function App() {
     };
   };
 
-  const eseguiFetch = useCallback(debounce((search) => {
+
+
+  const eseguiFetch = (search) => {
     return (fetch(`${API_URL}/products?search=${search}`)
       .then(res => res.json())
       .then(data => {
         setFilteredProducts(data);
+        console.log("Chiamata")
       })
       .catch(err => console.error(err)))
-  }, 300), [])
+  }
+
+  const eseguiFetchDebounced = useCallback(
+    debounce(eseguiFetch, 500)
+    , []);
 
   useEffect(() => {
-    eseguiFetch(search)
+    eseguiFetchDebounced(search)
 
   }, [search])
 
-  console.log("Prodotti trovati", filteredProducts)
+  //console.log("Prodotti trovati", filteredProducts)
 
   const prodottiDaMostrare = search ? filteredProducts : [];
 
@@ -44,7 +51,7 @@ function App() {
     <>
       <div>
         <h1>Cerca il prodotto che vuoi: </h1>
-        <input type="text" value={search} onChange={e => setSearch(e.target.value)} />
+        <input type="text" placeholder='Cerca qui...' value={search} onChange={e => setSearch(e.target.value)} />
         <p>Stai cercando: {search}</p>
         <div>
           <h2>Suggerimenti:</h2>
